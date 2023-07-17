@@ -27,7 +27,6 @@ if __name__ == "__main__":
         st.title("Upload your text file")
         uploaded_file = st.file_uploader("Upload your files here")
 
-
         # Initialization
         if 'upload' not in st.session_state:
             st.session_state.upload = None
@@ -51,8 +50,8 @@ if __name__ == "__main__":
             st.download_button(
                 label='Download text file',
                 data=st.session_state.upload,
-                file_name='text.txt',
-                mime='text/plain',
+                # file_name='text.txt',
+                # mime='text/plain',
                 # on_click=st.success("Successfully downloaded")
             )
         else:
