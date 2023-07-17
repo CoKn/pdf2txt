@@ -51,9 +51,9 @@ if __name__ == "__main__":
             st.download_button(
                 label='Download text file',
                 data=st.session_state.upload,
-                file_name='test.txt',
+                file_name='text.txt',
                 mime='text/plain',
-                on_click=st.success("Successfully downloaded")
+                # on_click=st.success("Successfully downloaded")
             )
         else:
             st.info("Upload a file first")
