@@ -32,9 +32,10 @@ if __name__ == "__main__":
             st.session_state.upload = None
 
         if uploaded_file:
-            st.success("file uploaded")
-            text = extract_text(uploaded_file)
-            st.session_state.upload = clean_text(text)
+            with st.spinner('Wait for it...'):
+                text = extract_text(uploaded_file)
+                st.session_state.upload = clean_text(text)
+            st.success('Done!')
 
             with st.expander("Show extracted text"):
                 st.write(st.session_state.upload)
@@ -49,10 +50,7 @@ if __name__ == "__main__":
 
             st.download_button(
                 label='Download text file',
-                data=st.session_state.upload,
-                # file_name='text.txt',
-                # mime='text/plain',
-                # on_click=st.success("Successfully downloaded")
+                data=st.session_state.upload
             )
         else:
             st.info("Upload a file first")
