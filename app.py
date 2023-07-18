@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 text = extract_text(uploaded_file)  # , codec=
                 st.session_state.upload = clean_text(text)
             alert = st.success('Done!')
-            time.sleep(1.5)
+            time.sleep(1)
             alert.empty()
 
             with st.expander("Show extracted text"):
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         if st.session_state.upload:
 
             st.text("How many characters would you like to convert?")
-            st.text(f"Your text has a length of {len(st.session_state.upload)}")
+            st.text(f"Your text has a length of {len(st.session_state.upload)} characters.")
 
             if st.checkbox("Entire Text"):
                 number = len(st.session_state.upload)
@@ -78,30 +78,30 @@ if __name__ == "__main__":
             with st.spinner('Wait for it...'):
                 if st.button('Convert'):
                     tts = gTTS(st.session_state.upload[:number], lang=language)
-                    # tts.save('./audio/audio.mp3')
                     mp3_fp = BytesIO()
                     tts.write_to_fp(mp3_fp)
 
-                    # with open('./audio/audio.mp3', 'rb') as audio_file:
-                    # audio_bytes = audio_file.read()
-
                     alert = st.success('Done!')
-                    time.sleep(1.5)
+                    time.sleep(1)
                     alert.empty()
 
-                    # st.audio(audio_bytes, format='audio.mp3')
                     st.audio(mp3_fp, format='audio.mp3')
+                    st.balloons()
 
-                    st.download_button(
-                        label='Download mp3 file',
-                        data=mp3_fp,
-                        file_name="audio.mp3"
-                    )
+                    col3, col4 = st.columns([1, 3])
 
-                    if st.button("Delete File"):
-                        if os.path.exists("audio.mp3"):
-                            os.remove("audio.mp3")
-                        else:
-                            st.error("The file does not exist")
+                    with col3:
+                        st.download_button(
+                            label='Download mp3 file',
+                            data=mp3_fp,
+                            file_name="audio.mp3"
+                        )
+
+                    with col4:
+                        if st.button("Clear file"):
+                            if os.path.exists("audio.mp3"):
+                                os.remove("audio.mp3")
+                            else:
+                                st.error("The file does not exist")
         else:
             st.info("Upload a file first")
