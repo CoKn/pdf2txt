@@ -2,6 +2,7 @@ import os
 import time
 from gtts import gTTS
 import streamlit as st
+from io import BytesIO
 from pdfminer.high_level import extract_text
 
 
@@ -36,7 +37,7 @@ if __name__ == "__main__":
 
         if uploaded_file:
             with st.spinner('Wait for it...'):
-                text = extract_text(uploaded_file)
+                text = extract_text(uploaded_file)  # , codec=
                 st.session_state.upload = clean_text(text)
             alert = st.success('Done!')
             time.sleep(1.5)
@@ -54,33 +55,53 @@ if __name__ == "__main__":
         st.title("Convert your text into audio (Sample)")
         if st.session_state.upload:
 
+            st.text("How many characters would you like to convert?")
+            st.text(f"Your text has a length of {len(st.session_state.upload)}")
+
+            if st.checkbox("Entire Text"):
+                number = len(st.session_state.upload)
+
+                language = st.selectbox("Language", ["en", "zh"])
+            else:
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    language = st.selectbox("Language", ["en", "zh"])
+
+                with col2:
+                    number = st.number_input('Insert a length', value=100)
+
             with st.expander("Show extracted text"):
-                st.write(st.session_state.upload[:100])
+                st.write(st.session_state.upload[:number])
 
             with st.spinner('Wait for it...'):
                 if st.button('Convert'):
-                    tts = gTTS(st.session_state.upload[:100])
-                    tts.save('audio.mp3')
+                    tts = gTTS(st.session_state.upload[:number], lang=language)
+                    # tts.save('./audio/audio.mp3')
+                    mp3_fp = BytesIO()
+                    tts.write_to_fp(mp3_fp)
 
-                    with open('audio.mp3', 'rb') as audio_file:
-                        audio_bytes = audio_file.read()
+                    # with open('./audio/audio.mp3', 'rb') as audio_file:
+                    # audio_bytes = audio_file.read()
 
-                        alert = st.success('Done!')
-                        time.sleep(1.5)
-                        alert.empty()
+                    alert = st.success('Done!')
+                    time.sleep(1.5)
+                    alert.empty()
 
-                        st.audio(audio_bytes, format='audio.mp3')
+                    # st.audio(audio_bytes, format='audio.mp3')
+                    st.audio(mp3_fp, format='audio.mp3')
 
-                        st.download_button(
-                            label='Download mp3 file',
-                            data=audio_bytes,
-                            file_name="audio.mp3"
-                        )
+                    st.download_button(
+                        label='Download mp3 file',
+                        data=mp3_fp,
+                        file_name="audio.mp3"
+                    )
 
-                        if st.button("Delete File"):
-                            if os.path.exists("audio.mp3"):
-                                os.remove("audio.mp3")
-                            else:
-                                st.error("The file does not exist")
+                    if st.button("Delete File"):
+                        if os.path.exists("audio.mp3"):
+                            os.remove("audio.mp3")
+                        else:
+                            st.error("The file does not exist")
         else:
             st.info("Upload a file first")
