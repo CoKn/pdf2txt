@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     if choice == "Process":
         st.title("Upload your text file")
-        uploaded_file = st.file_uploader("Upload your files here")
+        uploaded_file = st.file_uploader("Upload your files here", type=["pdf"])
 
         # Initialization
         if 'upload' not in st.session_state:
